@@ -1,3 +1,5 @@
+🌍 Languages: [English](README.md) | [Français](README.fr.md) | [日本語](README.ja.md) | [中文](README.zh.md) | [Deutsch](README.de.md) | [Español](README.es.md)
+
 # Generador TOTP
 
 Un generador de contraseñas de un solo uso basadas en tiempo (TOTP), simple, seguro y con interfaz adaptable, desarrollado con HTML, JavaScript y Tailwind CSS.
