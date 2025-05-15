@@ -1,3 +1,12 @@
+## 🌍 Available Languages
+
+- [English](README.md)
+- [Français](README.fr.md)
+- [日本語](README.ja.md)
+- [中文](README.zh.md)
+- [Deutsch](README.de.md)
+- [Español](README.es.md)
+
 # TOTP-Generator
 
 Ein einfacher, sicherer und responsiver browserbasierter Time-based One-Time Password (TOTP) Generator, entwickelt mit HTML, JavaScript und Tailwind CSS.
