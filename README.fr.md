@@ -1,3 +1,5 @@
+🌍 Languages: [English](README.md) | [Français](README.fr.md) | [日本語](README.ja.md) | [中文](README.zh.md) | [Deutsch](README.de.md) | [Español](README.es.md)
+
 # Générateur TOTP
 
 Un générateur de mot de passe à usage unique basé sur le temps (TOTP), simple, sécurisé et réactif, fonctionnant dans le navigateur avec HTML, JavaScript et Tailwind CSS.
