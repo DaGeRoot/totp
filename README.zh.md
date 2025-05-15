@@ -1,3 +1,5 @@
+🌍 Languages: [English](README.md) | [Français](README.fr.md) | [日本語](README.ja.md) | [中文](README.zh.md) | [Deutsch](README.de.md) | [Español](README.es.md)
+
 # TOTP 生成器
 
 一个简单、安全、响应迅速的基于浏览器的时间一次性密码（TOTP）生成器，使用 HTML、JavaScript 和 Tailwind CSS 构建。
