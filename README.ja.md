@@ -1,3 +1,5 @@
+🌍 Languages: [English](README.md) | [Français](README.fr.md) | [日本語](README.ja.md) | [中文](README.zh.md) | [Deutsch](README.de.md) | [Español](README.es.md)
+
 # TOTPジェネレーター
 
 HTML、JavaScript、Tailwind CSSで構築された、シンプルで安全かつレスポンシブなブラウザベースのワンタイムパスワード（TOTP）ジェネレーターです。
