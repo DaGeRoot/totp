@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TOTP Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3b82f6',
+            accent: '#1e40af'
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-gradient-to-tr from-blue-100 via-white to-blue-200 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 min-h-screen flex flex-col font-sans transition-all">
+
+  <header id="header" class="w-full bg-white dark:bg-gray-900 border-b border-blue-200 dark:border-gray-700 py-4 px-6 shadow z-10">
+  </header>
+
+  <main class="flex-1 flex items-center justify-center p-6">
+    <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-blue-200 dark:border-gray-700">
+      <div class="flex justify-between items-center mb-6">
+        <h2 id="title" class="text-3xl font-extrabold text-blue-700 dark:text-blue-300 text-center w-full">🔐 TOTP Code Generator</h2>
+      </div>
+      <label for="secret" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Base32 Secret</label>
+      <input type="text" id="secret" placeholder="e.g. KZXW 6YTB MFZW GZBA" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder-gray-400 dark:bg-gray-800 dark:text-white" />
+      <div class="flex gap-2 mt-6">
+        <button id="generateBtn" onclick="generate(true)" class="flex-1 bg-primary hover:bg-accent text-white font-medium py-3 rounded-xl transition-all shadow-md">Generate Code</button>
+        <button id="copyBtn" onclick="copyCode()" class="bg-white dark:bg-gray-800 border border-primary text-primary hover:bg-blue-100 dark:hover:bg-gray-700 font-medium px-4 py-3 rounded-xl transition-all shadow-md">📋</button>
+      </div>
+      <div id="code" class="text-4xl font-mono text-primary dark:text-blue-300 text-center mt-8 bg-blue-50 dark:bg-gray-800 border border-blue-200 dark:border-gray-700 rounded-2xl p-6 shadow-inner">Code will appear here</div>
+      <div id="countdownContainer" class="mt-4">
+        <div class="relative h-3 rounded-full bg-blue-100 dark:bg-gray-700 overflow-hidden">
+          <div id="progressBar" class="absolute top-0 left-0 h-full bg-primary transition-all duration-1000 ease-linear" style="width: 100%"></div>
+        </div>
+        <div id="countdown" class="text-center text-sm mt-2 text-gray-500 dark:text-gray-400">This code is valid for 30 more seconds</div>
+      </div>
+      <div id="copyTip" class="text-center text-green-600 dark:text-green-400 text-sm mt-4 hidden opacity-0 transition-opacity duration-500">Code copied!</div>
+    </div>
+  </main>
+
+  <footer id="footer" class="w-full bg-white dark:bg-gray-900 border-t border-blue-200 dark:border-gray-700 py-6 px-4 text-center text-sm text-gray-500 dark:text-gray-400">
+  </footer>
+
+  <script src="/layouts.js"></script>
+
+  <script>
+    const lang = (navigator.language || '').toLowerCase();
+
+    const texts = {
+      en: {
+        title: "🔐 TOTP Code Generator",
+        placeholder: "e.g. KZXW 6YTB MFZW GZBA",
+        generate: "Generate Code",
+        copy: "Copy",
+        countdown: "Next refresh in {s}s",
+        done: "Waiting to refres",
+        error: "Please enter a Base32 secret.",
+        copied: "Code copied!"
+      },
+      zh: {
+        title: "🔐 动态验证码生成器",
+        placeholder: "例如：KZXW 6YTB MFZW GZBA",
+        generate: "生成验证码",
+        copy: "复制",
+        countdown: "下次刷新：{s}秒",
+        done: "等待刷新",
+        error: "请输入 Base32 秘钥。",
+        copied: "验证码已复制！"
+      },
+      es: {
+        title: "🔐 Generador de Código TOTP",
+        placeholder: "p.ej. KZXW 6YTB MFZW GZBA",
+        generate: "Generar Código",
+        copy: "Copiar",
+        countdown: "Próxima actualización en {s}s",
+        done: "Esperando actualización",
+        error: "Por favor ingrese una clave Base32.",
+        copied: "¡Código copiado!"
+      },
+      fr: {
+        title: "🔐 Générateur de Code TOTP",
+        placeholder: "ex. KZXW 6YTB MFZW GZBA",
+        generate: "Générer le Code",
+        copy: "Copier",
+        countdown: "Actualisation dans {s}s",
+        done: "En attente de mise à jour",
+        error: "Veuillez entrer un secret Base32.",
+        copied: "Code copié !"
+      },
+      de: {
+        title: "🔐 TOTP-Code-Generator",
+        placeholder: "z.B. KZXW 6YTB MFZW GZBA",
+        generate: "Code generieren",
+        copy: "Kopieren",
+        countdown: "Nächste Aktualisierung in {s}s",
+        done: "Warten auf Aktualisierung",
+        error: "Bitte geben Sie ein Base32-Geheimnis ein.",
+        copied: "Code kopiert!"
+      },
+      ja: {
+        title: "🔐 TOTPコードジェネレーター",
+        placeholder: "W 6YTB MFZW GZBA",
+        generate: "コード生成",
+        copy: "コピー",
+        countdown: "次の更新まで {s}秒",
+        done: "更新を待機中",
+        error: "Base32のシークレットを入力してください。",
+        copied: "コードを コピーしました！"
+      }
+    };
+
+    let currentLang = language;
+    let t = texts[currentLang];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('title').textContent = t.title;
+      document.getElementById('secret').placeholder = t.placeholder;
+      document.getElementById('generateBtn').textContent = t.generate;
+      document.getElementById('copyBtn').textContent = t.copy;
+      document.getElementById('countdown').textContent = t.done;
+    });
+
+    let timerInterval;
+    let remaining = 30;
+
+    async function generate(startTimer = false) {
+      const rawInput = document.getElementById('secret').value.trim();
+      const cleanedSecret = rawInput.replace(/\s+/g, '');
+
+      if (!cleanedSecret) {
+        alert(t.error);
+        return;
+      }
+
+      try {
+        const response = await fetch('/totpapi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret: cleanedSecret })
+        });
+
+        if (!response.ok) throw new Error("Server error");
+
+        const result = await response.json();
+        const code = result.code;
+        document.getElementById('code').textContent = code;
+
+        if (startTimer) {
+          clearInterval(timerInterval);
+          remaining = 30;
+          updateCountdown();
+
+          timerInterval = setInterval(() => {
+            remaining--;
+            updateCountdown();
+            if (remaining <= 0) {
+              clearInterval(timerInterval);
+              document.getElementById('countdown').textContent = t.done;
+              document.getElementById('progressBar').style.width = '0%';
+            }
+          }, 1000);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error generating code.');
+      }
+    }
+
+    function updateCountdown() {
+      document.getElementById('countdown').textContent = t.countdown.replace('{s}', remaining);
+      document.getElementById('progressBar').style.width = (remaining / 30 * 100) + '%';
+    }
+
+    function copyCode() {
+      const codeText = document.getElementById('code').textContent;
+      navigator.clipboard.writeText(codeText).then(() => {
+        const tip = document.getElementById('copyTip');
+        tip.innerHTML = t.copied;
+        tip.classList.remove('hidden');
+        tip.style.opacity = '1';
+        setTimeout(() => {
+          tip.style.opacity = '0';
+          setTimeout(() => tip.classList.add('hidden'), 500);
+        }, 2000);
+      });
+    }
+
+
+    function eventLanguageChanged(lang) {
+      currentLang = lang;
+      const t = texts[currentLang];
+      if (t === null) {
+        return;
+      }
+
+      document.getElementById('title').textContent = t.title;
+      document.getElementById('secret').placeholder = t.placeholder;
+      document.getElementById('generateBtn').textContent = t.generate;
+      document.getElementById('copyBtn').textContent = t.copy;
+      document.getElementById('countdown').textContent = t.done;
+    }
+  </script>
+</body>
+</html>
